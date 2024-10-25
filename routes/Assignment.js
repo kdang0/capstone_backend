@@ -39,7 +39,7 @@ assignmentRouter.get('/:id', async(req,res,next) => {
         const {id} = req.params;
         const assignment = await Assignment.findById(id);
         if(assignment){
-            res.json({assignment});
+            res.json(assignment);
         } else {
             res.json({message: `No assignment found with id: ${id}`});
         }
