@@ -3,12 +3,14 @@ import User from '../models/User.js';
 import Student from '../models/Student.js';
 import Tutor from '../models/Tutor.js'
 const userRouter = new Router();
-
+import bcrypt from 'bcrypt';
 
 userRouter.post('/', async(req, res, next) => {
+    const {body} = req;
     try {
         console.log(req.body);
-        const newUser = await User.create(req.body);
+        const hashedPassword = await bcrypt.hash(body.password, 10)
+        const newUser = await User.create({...body, password: hashedPassword});
         if(newUser){
             if(newUser.role){
                 if(newUser.role.toLowerCase() == "student"){

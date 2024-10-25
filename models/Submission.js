@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import Class from './Class.js';
+import Assignment from './Assignment.js';
 
 export const submissionSchema = new mongoose.Schema({
     submittedDate: {
@@ -22,6 +24,15 @@ export const submissionSchema = new mongoose.Schema({
     },
     feedback: {
         type: String
+    },
+    classId: {
+        type: mongoose.ObjectId,
+        ref: Class,
+        required: true
+    },
+    assignmentId: {
+        type: mongoose.ObjectId,
+        required: true
     }
 });
 

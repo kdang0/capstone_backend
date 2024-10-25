@@ -5,7 +5,7 @@ import AssignAccess from '../models/AssignAccess.js';
 
 const assignmentRouter = new Router();
 
-
+//CREATES NEW ASSIGNMENT
 assignmentRouter.post('/', async(req, res, next) => {
     try{
         const newAssignment  = await Assignment.create(req.body);
@@ -19,20 +19,21 @@ assignmentRouter.post('/', async(req, res, next) => {
     }
 });
 
+//GETS ALL ASSIGNMENTS
 assignmentRouter.get('/', async(req,res,next) => {
     try{
         const assignments = await Assignment.find();
         if(assignments) {
             res.json({assignments});
         } else{
-            res.json({message: "No projects found"});
+            res.json({message: "No assignments found"});
         }
     } catch(err){
         next(error);
     }
 });
 
-
+//GETS SPECIFIC ASSIGNMENT
 assignmentRouter.get('/:id', async(req,res,next) => {
     try{
         const {id} = req.params;
@@ -47,7 +48,24 @@ assignmentRouter.get('/:id', async(req,res,next) => {
     }
 });
 
+//GETS ALL ASSIGNMENT BASED ON CLASS
+assignmentRouter.get('/class/:id', async (req,res,next) => {
+    try{
+        const {id} = req.params;
+        const assignments = await Assignment.find({classId : id});
+        if(assignments){
+            res.json({assignments})
+        } else{
+            res.json({message: "No assignments found"})
+        }
+        
+    } catch(err){
+        next(err);
+    }
+})
 
+
+//UPDATES SPECIFIC ASSIGNMENT
 assignmentRouter.patch('/:id', async (req,res,next) => {
     try{
         const {id} = req.params;
@@ -64,20 +82,22 @@ assignmentRouter.patch('/:id', async (req,res,next) => {
 });
 
 
+//UPDATES ASSIGNMENT'S SUBMISSIONS LIST
 assignmentRouter.patch('/submission/:id', async(req,res,next) => {
     try{
         const {id} = req.params;
         const {body} = req;
         const assignment = await Assignment.findById(id);
+        const submissionInf = {...body, assignmentId: assignment._id, classId: assignment.classId}
         if(!assignment){
             res.status(404).json({message: `Project not found: ${id}`});
         }
-        const submission = await Submission.create(body);
+        const submission = await Submission.create(submissionInf);
 
         if(submission){
             assignment.submissions.push(submission);
             await assignment.save();
-            res.status(201).json({assignment});
+            res.status(201).json({submission});
         } else{
             res.status(400).json({message: "Error creating submission"});
         }
@@ -86,6 +106,7 @@ assignmentRouter.patch('/submission/:id', async(req,res,next) => {
     }
 });
 
+//GRANTS ACCESS TO ASSIGNMENT
 assignmentRouter.post('/access', async(req,res,next) => {
     try{
         const {body} = req;
@@ -100,6 +121,7 @@ assignmentRouter.post('/access', async(req,res,next) => {
     }
 });
 
+//DELETES ASSIGNMENT
 assignmentRouter.delete('/:id', async (req,res,next) => {
     try{
         const {id} = req.params;
