@@ -21,3 +21,10 @@
 * /user POST create a user
 * /user/:id PATCH update a user
 * /user/:id DELETE delete a user 
+
+### Credits for Authentication and Session Management
+* https://javascript.plainenglish.io/session-authentication-with-node-js-express-passport-and-mongodb-ffd1eea4521c
+* https://www.youtube.com/watch?v=-RCnNyD0L-s
+* https://www.passportjs.org/concepts/authentication/middleware/
+* https://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize 
+* https://www.npmjs.com/package/connect-mongo#example-application 

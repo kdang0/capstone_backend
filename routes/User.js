@@ -5,6 +5,7 @@ import Tutor from '../models/Tutor.js'
 const userRouter = new Router();
 import bcrypt from 'bcrypt';
 
+//CREATES NEW USER
 userRouter.post('/', async(req, res, next) => {
     const {body} = req;
     try {
@@ -28,6 +29,7 @@ userRouter.post('/', async(req, res, next) => {
     }
 });
 
+//GETS SPECIFIC USER
 userRouter.get('/:id', async(req,res,next) => {
     try{
         const user = await User.findById(req.params.id);
@@ -41,6 +43,7 @@ userRouter.get('/:id', async(req,res,next) => {
     }
 });
 
+//UPDATES USER
 userRouter.patch('/:id', async(req, res, next) => {
     try{
         const {body} = req;
@@ -56,6 +59,7 @@ userRouter.patch('/:id', async(req, res, next) => {
     }
 });
 
+//DELETES USER
 userRouter.delete('/:id', async(req,res,next) => {
     try{
         const {id} = req.params;

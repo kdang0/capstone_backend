@@ -48,21 +48,36 @@ assignmentRouter.get('/:id', async(req,res,next) => {
     }
 });
 
-//GETS ALL ASSIGNMENT BASED ON CLASS
+//GETS ALL ASSIGNMENTS BASED ON CLASS
 assignmentRouter.get('/class/:id', async (req,res,next) => {
     try{
         const {id} = req.params;
         const assignments = await Assignment.find({classId : id});
         if(assignments){
-            res.json({assignments})
+            res.json({assignments});
         } else{
-            res.json({message: "No assignments found"})
+            res.json({message: "No assignments found"});
         }
         
     } catch(err){
         next(err);
     }
-})
+});
+
+//GET ALL ASSIGNMENTS BASED ON TUTOR
+assignmentRouter.get('/tutor/:id', async (req,res,next) => {
+    try{
+        const {id} = req.params;
+        const assignments = await Assignment.find({tutorId: id});
+        if(assignments){
+            res.json({assignments});
+        } else{
+            res.json({message: "No assignments found"});
+        }
+    } catch(err){
+        next(err);
+    }
+});
 
 
 //UPDATES SPECIFIC ASSIGNMENT

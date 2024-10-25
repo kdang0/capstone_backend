@@ -8,8 +8,6 @@ import assignmentRouter from './routes/Assignment.js';
 import classRouter from './routes/Class.js';
 import session from 'express-session';
 import passport from 'passport';
-import {Strategy} from 'passport-local'
-import bcrypt from 'bcrypt';
 import initializePassport  from './passport-config.js';
 import User from './models/User.js';
 import MongoStore from 'connect-mongo';
@@ -47,8 +45,7 @@ app.use(passport.session());
 //===== Routes =====
 app.post('/login', passport.authenticate('local', {
     successRedirect: '/login-success',
-    failureRedirect: '/login-failure',
-    failureFlash: true
+    failureRedirect: '/login-failure'
 }));
 
 app.delete('/logout', (req,res,next)=> {

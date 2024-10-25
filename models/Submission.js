@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Class from './Class.js';
-import Assignment from './Assignment.js';
+
 
 export const submissionSchema = new mongoose.Schema({
     submittedDate: {
