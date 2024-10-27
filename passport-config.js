@@ -1,4 +1,4 @@
-import { Strategy } from "passport-local";
+import LocalStrategy from "passport-local";
 import bcrypt from 'bcrypt';
 
 
@@ -20,9 +20,13 @@ const intializePassport = (passport, getUser, getUserById) => {
         }
     }
 
-    passport.use(new Strategy({}, authenticateUser));
+    passport.use(new LocalStrategy({}, authenticateUser));
     passport.serializeUser((user, cb) => cb(null, user._id))
-    passport.deserializeUser((id,cb) => cb(null, getUserById(id)))
+    passport.deserializeUser((id,cb) => {
+        getUserById(id)
+            .then(user => cb(null,user))
+            .catch(err => cb(err))   
+    })
 }
 
 export default intializePassport;

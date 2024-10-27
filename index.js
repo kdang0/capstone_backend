@@ -31,7 +31,10 @@ try{
 app.use(morgan('dev')); // logger
 app.use(express.json()); // parse data to the body
 app.use(express.urlencoded({extended: true}));
-app.use(cors()); // allows backend to talk to frontend in the same machine
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+})); // allows backend to talk to frontend in the same machine
 app.use(session({
     secret: 'secret',
     resave: false,
@@ -53,29 +56,26 @@ app.delete('/logout', (req,res,next)=> {
     res.json("Success");
 });
 
-
-//TESTING PURPOSES ONLY 
-//===========================
 app.get('/login-success', (req, res, next) => {
     console.log(req.session);
-    res.send('Login Attempt was successful.');
+    res.json({user: req.user});
   });
 
 
   app.get('/login-failure', (req, res, next) => {
     console.log(req.session);
-    res.send('Login Attempt Failed.');
+    res.json('Invalid username or password');
   });
 
   app.get('/profile', function(req, res) {
     console.log(req.session)
     if (req.isAuthenticated()) {
-      res.json({ message: 'You made it to the secured profie' })
+      res.json({user:req.user})
     } else {
       res.json({ message: 'You are not authenticated' })
     }
   })
-//===========================
+
 app.use('/user', userRouter);
 app.use('/assignment', assignmentRouter);
 app.use('/class', classRouter);
