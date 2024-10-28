@@ -67,14 +67,14 @@ app.get('/login-success', (req, res, next) => {
     res.json('Invalid username or password');
   });
 
-  app.get('/profile', function(req, res) {
+  app.get('/profile', (req, res) => {
     console.log(req.session)
     if (req.isAuthenticated()) {
       res.json({user:req.user})
     } else {
       res.json({ message: 'You are not authenticated' })
     }
-  })
+  });
 
 app.use('/user', userRouter);
 app.use('/assignment', assignmentRouter);

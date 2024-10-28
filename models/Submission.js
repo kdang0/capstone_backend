@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import Class from './Class.js';
+import Student from './Student.js';
 
 
 export const submissionSchema = new mongoose.Schema({
@@ -33,6 +34,11 @@ export const submissionSchema = new mongoose.Schema({
     assignmentId: {
         type: mongoose.ObjectId,
         required: true
+    },
+    studentId: {
+        type:mongoose.ObjectId,
+        required:true,
+        ref:Student
     }
 });
 

@@ -1,8 +1,11 @@
 import {Router} from 'express';
 import Class from '../models/Class.js';
 import ClassAccess from '../models/ClassAccess.js';
+import Tutor from '../models/Tutor.js';
 
 const classRouter = new Router();
+
+//CREATE CLASS
 classRouter.post('/', async (req,res,next) => {
     try{
         const newClass = await Class.create(req.body);
@@ -16,6 +19,7 @@ classRouter.post('/', async (req,res,next) => {
     }
 });
 
+//GET SPECIFIC CLASS
 classRouter.get('/:id', async (req, res, next) => {
     try{
         const {id} = req.params;
@@ -31,6 +35,7 @@ classRouter.get('/:id', async (req, res, next) => {
     }
 });
 
+//GET ALL CLASSES
 classRouter.get('/', async (req,res,next) => {
     try{
         const classes = await Class.find();
@@ -44,6 +49,36 @@ classRouter.get('/', async (req,res,next) => {
     }
 });
 
+//GET CLASS BY SPECIFIC STUDENT
+classRouter.get('/student/:id', async (req,res,next) => {
+    try{
+        const {id}=req.params;
+        const classes = [];
+        const classAccessList = await ClassAccess.find({studentId: id});
+        for(access of classAccessList){
+            const classInst = await Class.findOne({_id: access.classId});
+            classes.push(classInst);
+        }
+        res.json(classes);
+    } catch(error){
+        next(error);
+    }
+})
+
+
+//GET CLASS BY SPECIFIC TUTOR
+classRouter.get('/tutor/:id', async(req,res,next) => {
+    try{
+        const {id}=req.params;
+        const tutor = await Tutor.findOne({userId: id});
+        const classes = await Class.find({tutorId: tutor._id});
+        res.json(classes);
+    } catch(error){
+        next(error);
+    }
+})
+
+//DELETE SPECIFIC CLASS
 classRouter.delete('/:id', async (req,res,next) => {
     try{
         const {id} = req.params;
@@ -61,6 +96,7 @@ classRouter.delete('/:id', async (req,res,next) => {
     }
 });
 
+//GRANT ACCESS TO CLASS
 classRouter.post('/access', async(req,res,next) => {
     try{
         const {body} = req;
@@ -75,6 +111,7 @@ classRouter.post('/access', async(req,res,next) => {
     }
 });
 
+//UPDATE SPECIFIC CLASS
 classRouter.patch('/:id', async (req,res,next) => {
     try{
         const {id} = req.params;
