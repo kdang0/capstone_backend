@@ -162,6 +162,8 @@ assignmentRouter.patch("/submission/:id", async (req, res, next) => {
 });
 
 //GRANTS ACCESS TO ASSIGNMENT
+//Things to update:
+//*Make it an option to publish to public rather than it be automatic 
 assignmentRouter.post("/access/:id", async (req, res, next) => {
   try {
     const { id } = req.params;

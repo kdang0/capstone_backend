@@ -21,7 +21,9 @@ const intializePassport = (passport, getUser, getUserById) => {
     }
 
     passport.use(new LocalStrategy({}, authenticateUser));
+    //Store user information with the ID being the key
     passport.serializeUser((user, cb) => cb(null, user._id))
+    //Retrieve user information based on given information
     passport.deserializeUser((id,cb) => {
         getUserById(id)
             .then(user => cb(null,user))
