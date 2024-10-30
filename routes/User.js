@@ -4,6 +4,8 @@ import Student from '../models/Student.js';
 import Tutor from '../models/Tutor.js'
 const userRouter = new Router();
 import bcrypt from 'bcrypt';
+import Class from '../models/Class.js';
+import ClassAccess from '../models/ClassAccess.js';
 
 //CREATES NEW USER
 userRouter.post('/', async(req, res, next) => {
@@ -28,6 +30,35 @@ userRouter.post('/', async(req, res, next) => {
         next(err);
     }
 });
+
+//GRABS STUDENTS ENROLLED IN TUTOR'S CLASS(ES)
+userRouter.get('/students/:id', async (req,res,next) => {
+    try{
+        const {id} = req.params
+        //grab tutor
+        const tutor = await Tutor.findOne({userId:id});
+        const classList = await Class.find({tutorId: tutor._id});
+        const students = new Set([]);
+        const classAccessList = [];
+        for(const classInst of classList){
+            const classAccess = await ClassAccess.find({classId: classInst._id});
+            classAccessList.push(classAccess);
+        }
+
+        //Try to optimize this, right now its O(N^2)
+        for(const accesses of classAccessList){
+            for(const access of accesses){
+                const student = await Student.findOne({_id: access.studentId});
+                const user = await User.findOne({_id: student.userId});
+                students.add(user);
+            }
+        };
+        const studentArray = Array.from(students);
+        res.status(201).json(studentArray);
+    } catch(error){
+        next(error);
+    }
+})
 
 //GETS SPECIFIC USER
 userRouter.get('/:id', async(req,res,next) => {

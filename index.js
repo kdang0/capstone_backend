@@ -12,6 +12,8 @@ import initializePassport  from './passport-config.js';
 import User from './models/User.js';
 import MongoStore from 'connect-mongo';
 
+
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -57,23 +59,29 @@ app.delete('/logout', (req,res,next)=> {
 });
 
 app.get('/login-success', (req, res, next) => {
-    console.log(req.session);
     res.json({user: req.user});
   });
 
 
   app.get('/login-failure', (req, res, next) => {
-    console.log(req.session);
     res.json('Invalid username or password');
   });
 
   app.get('/profile', (req, res) => {
-    console.log(req.session)
     if (req.isAuthenticated()) {
       res.json({user:req.user})
     } else {
       res.json({ message: 'You are not authenticated' })
     }
+  });
+
+
+  //Retrieving quote from 3rd part API (zenquotes API)
+  app.get('/quote', async (req,res) => {
+    const result = await fetch('https://zenquotes.io/api/random');
+    const data = await result.json();
+    const quote = data[0];
+    res.json(quote);
   });
 
 app.use('/user', userRouter);

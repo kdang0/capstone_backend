@@ -166,20 +166,23 @@ assignmentRouter.patch("/:id", async (req, res, next) => {
 
 /**
  * GRANTS ACCESS TO ASSIGNMENT
- * Fix for tomorrow 
  */
 assignmentRouter.post("/access/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
-    const classAccess = await ClassAccess.findOne({
+    const classAccessList = await ClassAccess.find({
       classId: assignment.classId,
     });
-    const newAccess = await AssignAccess.create({
-        studentId: classAccess.studentId,
-        assignmentId: assignment._id,
-    });
-    if(newAccess){
+    const accessList = [];
+    for(const access of classAccessList){
+      const newAccess = await AssignAccess.create({
+          studentId: access.studentId,
+          assignmentId: assignment._id,
+      });
+      accessList.push(newAccess);
+    }
+    if(accessList.length > 0){
       res.status(201).json({ message: "Granted Access" });
     } else{
       res.status(400).json({message: "Error granting access"});
