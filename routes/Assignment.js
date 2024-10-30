@@ -95,12 +95,14 @@ assignmentRouter.get("/student/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const student = await Student.findOne({ userId: id });
+    console.log(`student: ${student}`);
     const assignmentAccessList = await AssignAccess.find({
       studentId: student._id,
     });
     const assignments = [];
-    for (access of assignmentAccessList) {
-      const assignment = Assignment.findOne({ _id: access.assignmentId });
+    console.log(`assignment list: ${assignmentAccessList}`);
+    for (const access of assignmentAccessList) {
+      const assignment = await Assignment.findOne({ _id: access.assignmentId });
       assignments.push(assignment);
     }
     if (assignments) {
@@ -110,6 +112,37 @@ assignmentRouter.get("/student/:id", async (req, res, next) => {
     }
   } catch (err) {
     next(err);
+  }
+});
+
+
+//UPDATES ASSIGNMENT'S SUBMISSIONS LIST
+assignmentRouter.patch("/submit", async (req, res, next) => {
+  try {
+    const { body } = req;
+    console.log(`BODY: ${body}`);
+    const assignment = await Assignment.findById(body.assignmentId);
+    const student = await Student.findOne({userId: body.id});
+    const submissionInf = {
+      answers: body.answers,
+      studentId: student._id,
+      assignmentId: body.assignmentId,
+      classId: body.classId,
+    };
+    if (!assignment) {
+      res.status(404).json({ message: `Project not found: ${id}` });
+    }
+    const submission = await Submission.create(submissionInf);
+    
+    if (submission) {
+      assignment.submissions.push(submission);
+      await assignment.save();
+      res.status(201).json({ submission });
+    } else {
+      res.status(400).json({ message: "Error creating submission" });
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -131,56 +164,25 @@ assignmentRouter.patch("/:id", async (req, res, next) => {
   }
 });
 
-//UPDATES ASSIGNMENT'S SUBMISSIONS LIST
-assignmentRouter.patch("/submission/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { body } = req;
-    const assignment = await Assignment.findById(id);
-    const student = await Student.findOne(body.id);
-    const submissionInf = {
-      answers: body.answers,
-      studentId: student._id,
-      assignmentId: assignment._id,
-      classId: assignment.classId,
-    };
-    if (!assignment) {
-      res.status(404).json({ message: `Project not found: ${id}` });
-    }
-    const submission = await Submission.create(submissionInf);
-
-    if (submission) {
-      assignment.submissions.push(submission);
-      await assignment.save();
-      res.status(201).json({ submission });
-    } else {
-      res.status(400).json({ message: "Error creating submission" });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-//GRANTS ACCESS TO ASSIGNMENT
-//Things to update:
-//*Make it an option to publish to public rather than it be automatic 
+/**
+ * GRANTS ACCESS TO ASSIGNMENT
+ * Fix for tomorrow 
+ */
 assignmentRouter.post("/access/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
     const assignment = await Assignment.findById(id);
-    const classAccessList = await ClassAccess.find({
+    const classAccess = await ClassAccess.findOne({
       classId: assignment.classId,
     });
-    for (access of classAccessList) {
-      await AssignAccess.create({
-        studentId: access.studentId,
+    const newAccess = await AssignAccess.create({
+        studentId: classAccess.studentId,
         assignmentId: assignment._id,
-      });
-    }
-    if (newAccess) {
+    });
+    if(newAccess){
       res.status(201).json({ message: "Granted Access" });
-    } else {
-      res.status(400).json({ message: "Error granting access" });
+    } else{
+      res.status(400).json({message: "Error granting access"});
     }
   } catch (error) {
     next(error);

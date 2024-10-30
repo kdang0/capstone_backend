@@ -2,7 +2,7 @@ import {Router} from 'express';
 import Class from '../models/Class.js';
 import ClassAccess from '../models/ClassAccess.js';
 import Tutor from '../models/Tutor.js';
-
+import Student from '../models/Student.js';
 const classRouter = new Router();
 
 //CREATE CLASS
@@ -54,8 +54,9 @@ classRouter.get('/student/:id', async (req,res,next) => {
     try{
         const {id}=req.params;
         const classes = [];
-        const classAccessList = await ClassAccess.find({studentId: id});
-        for(access of classAccessList){
+        const student = await Student.findOne({userId: id});
+        const classAccessList = await ClassAccess.find({studentId: student._id});
+        for(const access of classAccessList){
             const classInst = await Class.findOne({_id: access.classId});
             classes.push(classInst);
         }
